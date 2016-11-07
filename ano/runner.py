@@ -53,6 +53,7 @@ def main():
         p.set_defaults(func=cmd.run, **conf.as_dict(cmd.name))
 
     args = parser.parse_args()
+    args.additionalVariants = {"clock" : "16pll", "chip" : "85"}
 
     try:
         run_anywhere = "init clean list-models serial version"

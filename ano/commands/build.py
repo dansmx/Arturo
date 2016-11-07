@@ -172,12 +172,13 @@ class Build(Command):
     def setup_flags(self, args):
         board = self.e.board_model(args.board_model)
         boardVariant = args.cpu if ('cpu' in args) else None;
+        additionalVariants = args.additionalVariants
 
-        mcu = '-mmcu=' + BoardModels.getValueForVariant(board, boardVariant, 'build', 'mcu')
+        mcu = '-mmcu=' + BoardModels.getValueForVariant(board, boardVariant, additionalVariants, 'build', 'mcu')
         # Hard-code the flags that are essential to building the sketch
         self.e['cppflags'] = SpaceList([
             mcu,
-            '-DF_CPU=' + BoardModels.getValueForVariant(board, boardVariant, 'build', 'f_cpu'),
+            '-DF_CPU=' + BoardModels.getValueForVariant(board, boardVariant, additionalVariants, 'build', 'f_cpu'),
             '-DARDUINO=' + str(self.e.arduino_lib_version.as_int()),
             '-DARDUINO_ARCH_' + args.arch.upper(),
             '-I' + self.e['arduino_core_dir'],
@@ -186,11 +187,11 @@ class Build(Command):
         self.e['cppflags'] += SpaceList(shlex.split(args.cppflags))
 
         try:
-            self.e['cppflags'].append('-DUSB_VID=%s' % BoardModels.getValueForVariant(board, boardVariant, 'build', 'vid'))
+            self.e['cppflags'].append('-DUSB_VID=%s' % BoardModels.getValueForVariant(board, boardVariant, additionalVariants, 'build', 'vid'))
         except KeyError:
             None
         try:
-            self.e['cppflags'].append('-DUSB_PID=%s' % BoardModels.getValueForVariant(board, boardVariant, 'build', 'pid'))
+            self.e['cppflags'].append('-DUSB_PID=%s' % BoardModels.getValueForVariant(board, boardVariant, additionalVariants, 'build', 'pid'))
         except KeyError:
             None
 
@@ -288,16 +289,17 @@ class Build(Command):
     def check_memory(self, args):
         board = self.e.board_model(args.board_model)
         boardVariant = args.cpu if ('cpu' in args) else None;
+        additionalVariants = args.additionalVariants
         flash_max = sram_max = 0
 
         try:
-            flash_max = int(BoardModels.getValueForVariant(board, boardVariant,
+            flash_max = int(BoardModels.getValueForVariant(board, boardVariant, additionalVariants,
                 'upload', 'maximum_size'))
         except KeyError:
             pass
 
         try:
-            sram_max = int(BoardModels.getValueForVariant(board, boardVariant,
+            sram_max = int(BoardModels.getValueForVariant(board, boardVariant, additionalVariants,
                 'upload', 'maximum_data_size'))
         except KeyError:
             pass

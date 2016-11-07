@@ -55,8 +55,9 @@ class Upload(Command):
         port = args.serial_port or self.e.guess_serial_port()
         boardVariant = args.cpu if ('cpu' in args) else None;
         board = self.e.board_model(args.board_model)
+        additionalVariants = args.additionalVariants
 
-        protocol = BoardModels.getValueForVariant(board, boardVariant, 'upload', 'protocol')
+        protocol = BoardModels.getValueForVariant(board, boardVariant, additionalVariants, 'upload', 'protocol')
         
         if protocol == 'stk500':
             # if v1 is not specifid explicitly avrdude will
@@ -134,10 +135,10 @@ class Upload(Command):
         subprocess.call([
             self.e['avrdude'],
             '-C', self.e['avrdude.conf'],
-            '-p', BoardModels.getValueForVariant(board, boardVariant, 'build', 'mcu'),
+            '-p', BoardModels.getValueForVariant(board, boardVariant, additionalVariants, 'build', 'mcu'),
             '-P', port,
             '-c', protocol,
-            '-b', BoardModels.getValueForVariant(board, boardVariant, 'upload', 'speed'),
+            '-b', BoardModels.getValueForVariant(board, boardVariant, additionalVariants, 'upload', 'speed'),
             '-D',
             '-qq' if args.quiet else '',
             '-U', 'flash:w:%s:i' % self.e['hex_path'],

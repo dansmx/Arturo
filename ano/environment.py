@@ -393,14 +393,19 @@ Additional CPU argument required for board models available with different CPUs 
 
         return self['arduino_lib_version']
 
-
 class BoardModels(OrderedDict):
 
     @classmethod
-    def getValueForVariant(cls, boardsDict, variant, keyType, key):
+    def getValueForVariant(cls, boardsDict, variant, additionalVariants, keyType, key):
         if variant is not None:
             try:
                 return boardsDict['menu']['cpu'][variant][keyType][key]
+            except KeyError:
+                None
+
+        for variantKey, variantValue in additionalVariants.items():
+            try:
+                return boardsDict['menu'][variantKey][variantValue][keyType][key]
             except KeyError:
                 None
 
